@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Watch Store</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f3f3f3;
+}
+header{
+    background:#000;
+    color:#fff;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+nav a{
+    color:#fff;
+    margin:0 10px;
+    text-decoration:none;
+}
+.hero{
+    background:linear-gradient(135deg,#000,#444);
+    color:#fff;
+    text-align:center;
+    padding:50px 20px;
+}
+.timer{color:#ffd700;font-size:22px}
+.products{
+    padding:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+}
+.card{
+    background:#fff;
+    padding:20px;
+    border-radius:10px;
+    text-align:center;
+    box-shadow:0 10px 20px rgba(0,0,0,.1);
+    transition:.3s;
+}
+.card:hover{transform:translateY(-5px)}
+button{
+    background:#000;
+    color:#fff;
+    border:none;
+    padding:10px 15px;
+    border-radius:5px;
+    cursor:pointer;
+}
+button:hover{background:#444}
+.cart, .auth, .contact, .reviews{
+    background:#fff;
+    margin:20px;
+    padding:20px;
+    border-radius:10px;
+}
+input, select{
+    padding:10px;
+    width:250px;
+    margin:5px;
+}
+.review{
+    border-bottom:1px solid #ddd;
+    padding:10px 0;
+}
+footer{
+    background:#000;
+    color:#fff;
+    text-align:center;
+    padding:15px;
+}
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>⌚ Watch Store</h2>
+<nav>
+<a href="#products">Каталог</a>
+<a href="#cart">Корзина</a>
+<a href="#reviews">Отзывы</a>
+<a href="#contact">Контакты</a>
+<a href="#" onclick="toggleAuth()">Вход</a>
+</nav>
+</header>
+
+<section class="hero">
+<h1>Премиальные часы</h1>
+<p>Скидка 20% — только сегодня</p>
+<div class="timer" id="timer"></div>
+</section>
+
+<!-- ФИЛЬТР -->
+<div style="padding:20px;text-align:center">
+<select onchange="filter(this.value)">
+<option value="all">Все</option>
+<option value="classic">Классика</option>
+<option value="sport">Спорт</option>
+<option value="luxury">Люкс</option>
+</select>
+</div>
+
+<section id="products" class="products">
+<div class="card classic">
+<h3>Classic Watch</h3>
+<p>9 990 ₽</p>
+<button onclick="add('Classic',9990)">В корзину</button>
+</div>
+
+<div class="card sport">
+<h3>Sport Watch</h3>
+<p>12 500 ₽</p>
+<button onclick="add('Sport',12500)">В корзину</button>
+</div>
+
+<div class="card luxury">
+<h3>Luxury Watch</h3>
+<p>25 000 ₽</p>
+<button onclick="add('Luxury',25000)">В корзину</button>
+</div>
+</section>
+
+<section id="cart" class="cart">
+<h2>🛒 Корзина</h2>
+<ul id="items"></ul>
+<b>Итого: <span id="sum">0</span> ₽</b><br><br>
+<button onclick="pay()">Оплатить</button>
+</section>
+
+<section id="reviews" class="reviews">
+<h2>Отзывы</h2>
+<div class="review">⭐⭐⭐⭐⭐ Отлично!</div>
+<div class="review">⭐⭐⭐⭐⭐ Качество супер</div>
+<div class="review">⭐⭐⭐⭐⭐ Куплю ещё</div>
+</section>
+
+<section id="contact" class="contact">
+<h2>Оставить заявку</h2>
+<form onsubmit="sendTG(event)">
+<input placeholder="Имя" required><br>
+<input placeholder="Телефон" required><br>
+<button>Отправить</button>
+</form>
+<p id="msg"></p>
+</section>
+
+<!-- АВТОРИЗАЦИЯ -->
+<section class="auth hidden" id="auth">
+<h2>Личный кабинет</h2>
+<input id="login" placeholder="Логин"><br>
+<input id="pass" type="password" placeholder="Пароль"><br>
+<button onclick="login()">Войти</button>
+<p id="authMsg"></p>
+</section>
+
+<footer>
+© 2025 Watch Store
+</footer>
+
+<script>
+let cart=[],total=0;
+
+function add(name,price){
+cart.push({name,price});
+total+=price;
+render();
+}
+function render(){
+let ul=document.getElementById("items");
+ul.innerHTML="";
+cart.forEach(i=>{
+let li=document.createElement("li");
+li.textContent=`${i.name} — ${i.price} ₽`;
+ul.appendChild(li);
+});
+document.getElementById("sum").textContent=total;
+}
+function pay(){
+if(!cart.length)return alert("Корзина пуста");
+alert("Оплата успешна (демо)");
+cart=[];total=0;render();
+}
+function filter(cat){
+document.querySelectorAll(".card").forEach(c=>{
+c.style.display=(cat==="all"||c.classList.contains(cat))?"block":"none";
+});
+}
+function startTimer(){
+let t=3600;
+setInterval(()=>{
+let h=Math.floor(t/3600),
+m=Math.floor((t%3600)/60),
+s=t%60;
+timer.textContent=`До конца акции: ${h}:${m}:${s}`;
+t--;
+},1000);
+}
+startTimer();
+
+function toggleAuth(){
+document.getElementById("auth").classList.toggle("hidden");
+}
+function login(){
+authMsg.textContent="Вход выполнен (демо)";
+}
+function sendTG(e){
+e.preventDefault();
+msg.textContent="Заявка отправлена (готово для Telegram)";
+}
+</script>
+
+</body>
+</html>
